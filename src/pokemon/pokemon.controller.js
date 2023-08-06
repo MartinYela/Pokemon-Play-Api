@@ -1,5 +1,9 @@
 import pokeApi from "../config/pokeAPI.js";
-import { createPokemon, determineDamageDealt } from "../helpers/pokemon.js";
+import {
+  createPokemon,
+  determineDamageDealt,
+  shuffleArray,
+} from "../helpers/pokemon.js";
 
 export async function getPokemonCtrl(req, res) {
   try {
@@ -35,6 +39,67 @@ export async function getPokemonCtrl(req, res) {
   }
 }
 
+export async function getRandomFivePokemons(req, res) {
+  const allPokemonNames = [
+    "pikachu",
+    "charizard",
+    "bulbasaur",
+    "squirtle",
+    "mew",
+    "eevee",
+    "snorlax",
+    "jigglypuff",
+    "magikarp",
+    "ditto",
+    "lapras",
+    "onix",
+    "cubone",
+    "abra",
+    "meowth",
+    "psyduck",
+    "growlithe",
+    "marill",
+    "vulpix",
+    "machop",
+  ];
+
+  try {
+    const shuffledNames = shuffleArray(allPokemonNames);
+    const selectedNames = shuffledNames.slice(0, 5);
+
+    const pokemonDataArray = await Promise.all(
+      selectedNames.map(async (pokemonName) => {
+        const { data, status } = await pokeApi.get(`/pokemon/${pokemonName}`);
+        if (status === 200) {
+          const pokemonData = createPokemon(data);
+
+          const movesWithPowers = await Promise.all(
+            pokemonData?.moves?.map(async (move) => {
+              const moveData = await getMoveData(move);
+              return {
+                name: move,
+                power: moveData?.power || 0,
+              };
+            })
+          );
+
+          pokemonData.moves = movesWithPowers;
+
+          return pokemonData;
+        }
+      })
+    );
+
+    res.status(200).json({
+      pokemons: pokemonDataArray,
+    });
+  } catch (error) {
+    res.status(400).json({
+      error,
+    });
+  }
+}
+
 async function getMoveData(moveName) {
   try {
     const { data } = await pokeApi.get(`/move/${moveName}`);
@@ -59,7 +124,7 @@ export async function calculateDamageCtrl(req, res) {
     );
 
     res.status(200).json({
-      damageDealt: damageDealt.toFixed(2),
+      damageDealt: parseFloat(damageDealt.toFixed(2)),
     });
   } catch (error) {
     res.status(400).json({

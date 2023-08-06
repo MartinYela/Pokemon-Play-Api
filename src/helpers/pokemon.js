@@ -8,6 +8,7 @@ export const findOneProperty = (pokemon, property) => {
 
 // From a complete pokemon, I create a pokemon with the data of interest.
 export const createPokemon = (pokemon) => {
+  const image = pokemon?.sprites?.front_default;
   const firstHP = findOneProperty(pokemon, "hp");
   const baseAttack = findOneProperty(pokemon, "attack");
   const baseDefense = findOneProperty(pokemon, "defense");
@@ -32,6 +33,7 @@ export const createPokemon = (pokemon) => {
     baseSpecialDefense,
     baseSpeed,
     moves,
+    image,
   };
 };
 
@@ -67,4 +69,13 @@ const calculateAttackEfficiency = (attackType, defenderType) => {
   } else {
     return 1; // If no specific efficiency is found, normal damage is assumed (1).
   }
+};
+
+export const shuffleArray = (array) => {
+  const shuffledArray = array.slice();
+  for (let i = shuffledArray.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffledArray[i], shuffledArray[j]] = [shuffledArray[j], shuffledArray[i]];
+  }
+  return shuffledArray;
 };

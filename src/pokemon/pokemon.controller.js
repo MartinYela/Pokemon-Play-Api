@@ -4,6 +4,7 @@ import {
   determineDamageDealt,
   shuffleArray,
 } from "../helpers/pokemon.js";
+import { allPokemonNames } from "./pokemon.constants.js";
 
 export async function getPokemonCtrl(req, res) {
   try {
@@ -40,29 +41,6 @@ export async function getPokemonCtrl(req, res) {
 }
 
 export async function getRandomFivePokemons(req, res) {
-  const allPokemonNames = [
-    "pikachu",
-    "charizard",
-    "bulbasaur",
-    "squirtle",
-    "mew",
-    "eevee",
-    "snorlax",
-    "jigglypuff",
-    "magikarp",
-    "ditto",
-    "lapras",
-    "onix",
-    "cubone",
-    "abra",
-    "meowth",
-    "psyduck",
-    "growlithe",
-    "marill",
-    "vulpix",
-    "machop",
-  ];
-
   try {
     const shuffledNames = shuffleArray(allPokemonNames);
     const selectedNames = shuffledNames.slice(0, 5);

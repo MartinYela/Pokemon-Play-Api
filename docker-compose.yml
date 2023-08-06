@@ -1,0 +1,44 @@
+version: '3.8'
+
+services:
+  pokemon-play-api:
+    build: .
+    ports:
+      - 3001:3001
+    depends_on:
+      - pokemon-play-db
+    networks:
+      - backend-networks
+    environment:
+      - PORT=3001
+      - SECRET=p1o2k3e4m5o6n
+      - SECRETLOGIN=pokemon-play
+      - SALT=pokeplay_clave_secreta
+      - DATABASE=pokemons
+      - USER=root
+      - PASSWORD=1234
+      - URL=https://pokeapi.co/api/v2/
+      - HOST=172.18.0.1
+  pokemon-play-db:
+    image: mariadb
+    restart: always
+    env_file:
+      .env
+    environment:
+      - MARIADB_USER=root
+      - MARIADB_PASSWORD=1234
+      - MARIADB_ROOT_PASSWORD=1234
+      - MARIADB_DATABASE=pokemons
+    ports: 
+      - 3308:3306
+    networks:
+      - backend-networks
+    volumes:
+      - pokemon-api-db-vol1:/var/lib/mysql
+
+networks:
+  backend-networks:
+    driver: bridge
+
+volumes:
+  pokemon-api-db-vol1:
